@@ -21,43 +21,27 @@ app.listen(PORT,(err) => {
     }
 })
 
-app.get('/checkIP',async(req,res) => {
-    const {ipList} = req.body
-    new Promise((resolve,reject) => {
-        let length = ipList.length
-        const arr = []
-        ipList.forEach(ip => {
-            try{
-                ping.sys.probe(ip, function(isAlive){
-                    if(isAlive){
-                        arr.push({
-                            ip,
-                            status:'online'
-                        })
-                    }else{
-                        arr.push({
-                            ip,
-                            status:'offline'
-                        })
-                    }
-                    if(arr.length == length){
-                        length += 1
-                        resolve(arr)
-                    }
-                }, pingConfig);
-            }catch(err){
-                console.log(err)
-                arr.push({
-                    ip,
+app.post('/checkIP',async(req,res) => {
+    const branch = req.body
+    try{
+        ping.sys.probe(branch.branchIP, function(isAlive){
+            if(isAlive){
+                res.send({
+                    branch:branch.branchName,
+                    status:'online'
+                })
+            }else{
+                res.send({
+                    branch:branch.branchName,
                     status:'offline'
                 })
-                if(arr.length == length){
-                    length += 1
-                    resolve(arr)
-                }
             }
+        }, pingConfig);
+    }catch(err){
+        console.log(err)
+        res.send({
+            branch:branch.branchName,
+            status:'offline'
         })
-    }).then((arr) => {
-        res.send(arr)
-    })
+    }
 })
