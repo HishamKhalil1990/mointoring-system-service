@@ -8,7 +8,7 @@ const app = express()
 
 const PORT = process.env.PORT
 const pingConfig = {
-    timeout: 10,
+    timeout: 5,
 }
 
 app.use(bodyParser.json())
